@@ -8,7 +8,6 @@ import csv
 from playsound import playsound
 
 # Function to read emotion labels from text files
-# WELCHES LABEL FILE?
 def ReadLabelFile(file_path):
     with open(file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
@@ -20,8 +19,8 @@ def ReadLabelFile(file_path):
 
 def main():
     # Initialize engine for emotion detection
-    emotion_model = "modelpath"
-    emotion_label = "labelpath"
+    emotion_model = "./emotion_model/emotion_model.tflite"
+    emotion_label = "./emotion_model/emotion_labels.txt"
     emotion_engine = DetectionEngine(emotion_model)
     emotion_labels = ReadLabelFile(emotion_label)
 
@@ -29,7 +28,7 @@ def main():
     project_id = "nemo-life-assistant"
     compute_region = "us-central1"
     model_id = "heartrates_v1"
-    file_path = "/local/path/to/file"  # anpassen!
+    file_path = "./hr_model/sample_data.csv"
     score_threshold = 0.5
 
     # Get full model path and create prediction client for AutoML Tables
@@ -45,15 +44,14 @@ def main():
     # Initialize variables
     modus = "fall"
     count = 0
-    # Coral Camera macht alle x Sekunden ein Bild, das an Object Detection Modell geschickt wird, solange modus == "fall"
     while modus == "fall":
         count += 1
 
         # Take picture
-        subprocess.run("cd richtiger_path && snapshot --oneshot --prefix face")
+        path = "./pictures"
+        subprocess.run("cd {} && snapshot --oneshot --prefix face".format(path))
         print("----------took picture----------")
         # Open image
-        path = # Bilder Ordner
         paths = []
         for file in os.listdir(path):
             paths.append(os.path.join(path, file))
@@ -70,8 +68,6 @@ def main():
         else:
             print("----------no face detected----------")
             playsound("./sounds/no_nemo.mp3")
-            # Nachfragen, ob alles okay
-            # an Assistant weiter geben
 
         if count%10 == 0:
             modus = "hr"
@@ -82,23 +78,12 @@ def main():
     while modus == "hr":
         # Open CSV-file input
         print("----------read heartrate----------")
-        #with open(file_path, "rt") as csv_file:
-            # Read each row of csv
-            #content = csv.reader(csv_file)
-            #for row in content:
-                # Create payload
-                #values = []
-                #for column in row:
-                    #values.append({'number_value': float(column)})
-                #payload = {
-                    #'row': {'values': values}
-                #}
         row = int(str(count)[-2:-1])
         with open(file_path, "rt") as csv_file:
             values = [float(i) for i in list(csv.reader(csv_file))[row]]
             request = {"payload": {"row": {"values": values}}}
         # Query AutoML Tables model
-        response = prediction_client.predict(model_full_id, payload, params)
+        response = prediction_client.predict(model_full_id, request, params)
         print("----------analyze heartrate----------")
         for result in response.payload:
         # laut Doku result.display_name; nicht sicher was display_name ist    
@@ -108,7 +93,7 @@ def main():
             elif result.ok == 0:
                 print("heartrate is not okay")
                 print("score = {}".format(result.classification.score))
-                # Predictions an Assistant schicken
+                playsound("./sounds/bad_hr.mp3")
             else:
                 print("not able to analyze heartrate")
         # Return to fall detection mode
