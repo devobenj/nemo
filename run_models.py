@@ -67,7 +67,7 @@ def main():
             print("score = ", ans.score)
         else:
             print("----------no face detected----------")
-            playsound("./sounds/no_nemo.mp3")
+            playsound("./audio/no_nemo.mp3")
 
         if count%10 == 0:
             modus = "hr"
@@ -86,14 +86,14 @@ def main():
         response = prediction_client.predict(model_full_id, request, params)
         print("----------analyze heartrate----------")
         for result in response.payload:
-        # laut Doku result.display_name; nicht sicher was display_name ist    
+        # laut Doku result.display_name; nicht sicher was display_name ist
             if result.ok == 1:
                 print("heartrate is okay")
                 print("score = {}".format(result.classification.score))
             elif result.ok == 0:
                 print("heartrate is not okay")
                 print("score = {}".format(result.classification.score))
-                playsound("./sounds/bad_hr.mp3")
+                playsound("./audio/bad_hr.mp3")
             else:
                 print("not able to analyze heartrate")
         # Return to fall detection mode
