@@ -1,0 +1,8 @@
+0 background
+1 scared
+2 disgusted
+3 sad
+4 surprised
+5 happy
+6 contempt
+7 angry
