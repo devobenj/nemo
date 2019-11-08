@@ -33,8 +33,11 @@ def main():
     score_threshold = "0.5"
 
     # Create prediction client for AutoML Tables using service account credentials
-    client = automl.TablesClient(credentials=service_account.Credentials.from_service_account_file('nemo-hrml-key.json'),
+    try:
+        client = automl.TablesClient(credentials=service_account.Credentials.from_service_account_file('nemo-hrml-key.json'),
                                  project=project_id, region=compute_region)
+    except:
+        print("Failure creating an AutoML Tables client")
 
     # Initialize params
     params = {}
@@ -48,7 +51,7 @@ def main():
 
     while True:
         while modus == "fall":
-            count += 5
+            count += 1
             # Take picture
             subprocess.run("cd {} && snapshot --oneshot --prefix face".format(path), shell=True)
             print("----------took picture----------")
@@ -99,6 +102,7 @@ def main():
                 response = client.predict(model_display_name=model_id, inputs=inputs)
             except:
                 print("An failure calling the cloud-based model occured")
+                break
 
             print("----------analyze heartrate----------")
             result =  response.payload[0].tables if (response.payload[0].tables.score > response.payload[1].tables.score) else response.payload[1].tables
