@@ -48,7 +48,7 @@ def main():
 
     while True:
         while modus == "fall":
-            count += 1
+            count += 5
             # Take picture
             subprocess.run("cd {} && snapshot --oneshot --prefix face".format(path), shell=True)
             print("----------took picture----------")
@@ -59,7 +59,10 @@ def main():
             img = Image.open(paths[-1])
             print("----------opened image----------")
             # Run inference
-            ans = emotion_engine.detect_with_image(img, threshold=0.5, keep_aspect_ratio=True, relative_coord=True, top_k=1)
+            try:
+                ans = emotion_engine.detect_with_image(img, threshold=0.5, keep_aspect_ratio=True, relative_coord=True, top_k=1)
+            except:
+                print("An failure calling the detection model occured")
 
             if ans:
                 print("----------face detected----------")
@@ -68,7 +71,10 @@ def main():
                 print("score = ", ans.score)
             else:
                 print("----------no face detected----------")
-                #playsound("/audio/no_nemo.mp3")
+                try:
+                    playsound("/audio/no_nemo.mp3")
+                except:
+                    print("Cannot play audio")
 
             if count%10 == 0:
                 modus = "hr"
@@ -89,7 +95,11 @@ def main():
                 }
 
             # Query AutoML Tables model
-            response = client.predict(model_display_name=model_id, inputs=inputs)
+            try:
+                response = client.predict(model_display_name=model_id, inputs=inputs)
+            except:
+                print("An failure calling the cloud-based model occured")
+
             print("----------analyze heartrate----------")
             result =  response.payload[0].tables if (response.payload[0].tables.score > response.payload[1].tables.score) else response.payload[1].tables
             if(result.value.string_value == '1'):
@@ -98,7 +108,10 @@ def main():
             elif(result.value.string_value == '0'):
                 print("heartrate is not okay")
                 print("score = {}".format(result.score))
-                playsound("./sounds/bad_hr.mp3")
+                try:
+                    playsound("./sounds/bad_hr.mp3")
+                except:
+                    print("Cannot play audio")
             else:
                 print("not able to analyze heartrate")
 
