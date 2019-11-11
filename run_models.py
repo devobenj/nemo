@@ -59,6 +59,7 @@ def main():
             paths = []
             for file in os.listdir(path):
                 paths.append(os.path.join(path, file))
+            paths.sort()
             img = Image.open(paths[-1])
             print("----------opened image----------")
             # Run inference
