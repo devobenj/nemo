@@ -51,7 +51,7 @@ def main():
 
     while True:
         while modus == "fall":
-            count += 5
+            count += 1
             # Take picture
             subprocess.run("cd {} && snapshot --oneshot --prefix face".format(path), shell=True)
             print("----------took picture----------")
@@ -65,10 +65,10 @@ def main():
             print("----------opened image----------")
             print(paths[-1])
             # Run inference
-          #  try:
+            try:
             ans = emotion_engine.detect_with_image(img, threshold=0.5, keep_aspect_ratio=True, relative_coord=True, top_k=1)
-          #  except:
-          #      print("An failure calling the detection model occured")
+            except:
+                print("An failure calling the detection model occured")
 
             if ans:
                 print("----------face detected----------")
