@@ -78,7 +78,7 @@ def main():
             else:
                 print("----------no face detected----------")
                 try:
-                    playsound("/audio/no_nemo.mp3")
+                    playsound("/audio/no_nemo_cloudtts.mp3")
                 except:
                     print("Cannot play audio")
 
@@ -116,7 +116,7 @@ def main():
                 print("heartrate is not okay")
                 print("score = {}".format(result.score))
                 try:
-                    playsound("./sounds/bad_hr.mp3")
+                    playsound("./sounds/bad_hr_cloudtts.mp3")
                 except:
                     print("Cannot play audio")
             else:
