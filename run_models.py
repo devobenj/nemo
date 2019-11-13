@@ -60,23 +60,25 @@ def main():
             for file in os.listdir(path):
                 paths.append(os.path.join(path, file))
             paths.sort()
+
             img = Image.open(paths[-1])
             print("----------opened image----------")
+            print(paths[-1])
             # Run inference
             try:
-                ans = emotion_engine.detect_with_image(img, threshold=0.5, keep_aspect_ratio=True, relative_coord=True, top_k=1)
+            ans = emotion_engine.detect_with_image(img, threshold=0.5, keep_aspect_ratio=True, relative_coord=True, top_k=1)
             except:
                 print("An failure calling the detection model occured")
 
             if ans:
                 print("----------face detected----------")
-                current_emotion = emotion_labels[ans.label_id]
-                print("emotion = ", current_emotion)
-                print("score = ", ans.score)
+                for obj in ans:
+                  print('score = ', obj.score)
+                  print("emotion = ", emotion_labels[obj.label_id])
             else:
                 print("----------no face detected----------")
                 try:
-                    playsound("/audio/no_nemo_cloudtts.mp3")
+                    playsound("/audio/no_nemo.mp3")
                 except:
                     print("Cannot play audio")
 
@@ -94,8 +96,8 @@ def main():
                 values = [float(i) for i in list(csv.reader(csv_file))[row]]
                 #request = {"payload": {"row": {"values": values}}}
                 inputs= {'male': str(values[0]),
-                        'heartRate': values[1],
-                        'age':values[2]
+                        'age': values[1],
+                        'heartRate':values[2]
                 }
 
             # Query AutoML Tables model
@@ -114,7 +116,7 @@ def main():
                 print("heartrate is not okay")
                 print("score = {}".format(result.score))
                 try:
-                    playsound("./sounds/bad_hr_cloudtts.mp3")
+                    playsound("./sounds/bad_hr.mp3")
                 except:
                     print("Cannot play audio")
             else:
