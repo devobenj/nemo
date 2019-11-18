@@ -66,7 +66,7 @@ def main():
             print(paths[-1])
             # Run inference
             try:
-            ans = emotion_engine.detect_with_image(img, threshold=0.5, keep_aspect_ratio=True, relative_coord=True, top_k=1)
+        	    ans = emotion_engine.detect_with_image(img, threshold=0.5, keep_aspect_ratio=True, relative_coord=True, top_k=1)
             except:
                 print("An failure calling the detection model occured")
 
