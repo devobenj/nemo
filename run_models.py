@@ -79,6 +79,7 @@ def main():
                 print("----------no face detected----------")
                 try:
                     playsound("/audio/no_nemo_cloudtts.mp3")
+                    time.sleep(60)
                 except:
                     print("Cannot play audio")
 
