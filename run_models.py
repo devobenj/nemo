@@ -8,6 +8,7 @@ import csv
 from playsound import playsound
 from google.oauth2 import service_account
 import random
+import threading
 
 # Function to read emotion labels from text files
 def ReadLabelFile(file_path):
@@ -18,6 +19,25 @@ def ReadLabelFile(file_path):
         pair = line.strip().split(maxsplit=1)
         ret[int(pair[0])] = pair[1].strip()
     return ret
+
+jokeTold = 0
+def jokeWait():
+    global jokeTold
+    while True:
+        time.sleep(600)
+        jokeTold = 0
+
+jokeTimer = threading.Thread(target=jokeWait)
+
+def tellJoke():
+    global jokeTold
+    if(jokeTold == 0):
+        rand = random.randint(1, 5)
+        joke = "joke_" + str(rand) +  ".mp3"
+        try:
+            playsound("./audio/jokes/"+joke)
+        jokeTold = 1
+
 
 def main():
     # Initialize engine for emotion detection
@@ -50,6 +70,7 @@ def main():
     modus = "fall"
     count = 0
     emotion_count = 0
+    jokeTimer.start()
 
     while True:
         while modus == "fall":
@@ -82,14 +103,9 @@ def main():
                   else:
                       emotion_count = 0
                 if emotion_count == 3:
-                    rand = random.randint(1, 5)
-                    joke = "joke_" + str(rand) +  ".mp3"
-                    try:
-                        playsound(os.path.join("./audio/jokes/", joke))
-                    except:
-                        print("Cannot play audio")
-                    emotion_count = 0
+                    tellJoke()            
                     time.sleep(15)
+                    emotion_count = 0
             else:
                 print("----------no face detected----------")
                 try:
