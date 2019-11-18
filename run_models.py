@@ -35,7 +35,9 @@ def tellJoke():
         rand = random.randint(1, 5)
         joke = "joke_" + str(rand) +  ".mp3"
         try:
-            playsound("./audio/jokes/"+joke)
+            playsound(os.path.join("./audio/jokes/", joke))
+        except:	
+            print("Cannot play joke audio")  
         jokeTold = 1
 
 
