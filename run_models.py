@@ -7,6 +7,7 @@ from google.cloud import automl_v1beta1 as automl
 import csv
 from playsound import playsound
 from google.oauth2 import service_account
+import random
 
 # Function to read emotion labels from text files
 def ReadLabelFile(file_path):
@@ -82,8 +83,11 @@ def main():
                       emotion_count = 0
                 if emotion_count == 3:
                     rand = random.randint(1, 5)
-                    joke = "joke_" + rand +  ".mp3"
-                    playsound(os.path.join("./audio/jokes/", joke))
+                    joke = "joke_" + str(rand) +  ".mp3"
+                    try:
+                        playsound(os.path.join("./audio/jokes/", joke))
+                    except:
+                        print("Cannot play audio")
                     emotion_count = 0
                     time.sleep(15)
             else:
