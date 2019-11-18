@@ -48,6 +48,7 @@ def main():
     # Initialize variables
     modus = "fall"
     count = 0
+    emotion_count = 0
 
     while True:
         while modus == "fall":
@@ -75,10 +76,20 @@ def main():
                 for obj in ans:
                   print('score = ', obj.score)
                   print("emotion = ", emotion_labels[obj.label_id])
+                  if emotion_labels[obj.label_id] in ["sad", "scared", "angry", "disgusted"]:
+                      emotion_count += 1
+                  else:
+                      emotion_count = 0
+                if emotion_count == 3:
+                    rand = random.randint(1, 5)
+                    joke = "joke_" + rand +  ".mp3"
+                    playsound(os.path.join("./audio/jokes/", joke))
+                    emotion_count = 0
+                    time.sleep(15)
             else:
                 print("----------no face detected----------")
                 try:
-                    playsound("/audio/no_nemo_cloudtts.mp3")
+                    playsound("./audio/no_nemo_cloudtts.mp3")
                     time.sleep(60)
                 except:
                     print("Cannot play audio")
