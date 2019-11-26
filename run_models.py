@@ -20,15 +20,17 @@ def ReadLabelFile(file_path):
         ret[int(pair[0])] = pair[1].strip()
     return ret
 
+#Function to specify a timer to wait between joke outputs
 jokeTold = 0
 def jokeWait():
     global jokeTold
     while True:
-        time.sleep(600)
+        time.sleep(1800)
         jokeTold = 0
 
 jokeTimer = threading.Thread(target=jokeWait)
 
+# Function to play one of several joke audio files
 def tellJoke():
     global jokeTold
     if(jokeTold == 0):
@@ -54,6 +56,7 @@ def main():
     model_id = "heartrates_v1"
     file_path = "./hr_model/sample_data.CSV"
     score_threshold = "0.5"
+
 
     # Create prediction client for AutoML Tables using service account credentials
     try:
@@ -89,12 +92,14 @@ def main():
             img = Image.open(paths[-1])
             print("----------opened image----------")
             print(paths[-1])
-            # Run inference
+            # Run emotion recognition inference
             try:
         	    ans = emotion_engine.detect_with_image(img, threshold=0.5, keep_aspect_ratio=True, relative_coord=True, top_k=1)
             except:
                 print("An failure calling the detection model occured")
 
+            # If a face is detected, get emotion from detected faces
+            # and call tellJoke if emotion is negative three times in a row
             if ans:
                 print("----------face detected----------")
                 for obj in ans:
@@ -108,6 +113,8 @@ def main():
                     tellJoke()            
                     time.sleep(15)
                     emotion_count = 0
+
+            # If no face is detected, play the audio file to trigger Google Assistant
             else:
                 print("----------no face detected----------")
                 try:
@@ -134,7 +141,7 @@ def main():
                         'heartRate':values[2]
                 }
 
-            # Query AutoML Tables model
+            # Query the AutoML Tables heart rate model
             try:
                 response = client.predict(model_display_name=model_id, inputs=inputs)
             except:
@@ -143,9 +150,11 @@ def main():
 
             print("----------analyze heartrate----------")
             result =  response.payload[0].tables if (response.payload[0].tables.score > response.payload[1].tables.score) else response.payload[1].tables
+
             if(result.value.string_value == '1'):
                 print("heartrate is okay")
                 print("score = {}".format(result.score))
+            # If heart rate is not normal, play the audio file to trigger Google Assistant
             elif(result.value.string_value == '0'):
                 print("heartrate is not okay")
                 print("score = {}".format(result.score))
